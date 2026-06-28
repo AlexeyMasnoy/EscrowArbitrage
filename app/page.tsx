@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react';
 import { studionet } from 'genlayer-js/chains';
 import { createClient, createAccount } from "genlayer-js";
+import { TransactionStatus } from "genlayer-js/types"; // 1. Импорт для статуса
 
-// Инициализация клиента
 const client = createClient({
   chain: studionet,
 });
@@ -12,18 +12,16 @@ export default function Home() {
   const [url, setUrl] = useState('');
   const [deal, setDeal] = useState<any>(null);
   
-  // Аккаунт для подписи транзакций (создается локально для демки)
   const account = createAccount();
   const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`;
 
-  // Чтение состояния контракта
   const fetchStatus = async () => {
     try {
       const result = await client.readContract({
         address: contractAddress,
         functionName: 'get_deal_status',
         args: [],
-        stateStatus: "accepted",
+        // 2. Удалили stateStatus для чистоты типизации
       });
       setDeal(result);
     } catch (e) {
@@ -31,7 +29,6 @@ export default function Home() {
     }
   };
 
-  // Запись транзакции
   const runArbitration = async () => {
     try {
       const txHash = await client.writeContract({
@@ -39,13 +36,13 @@ export default function Home() {
         address: contractAddress,
         functionName: 'submit_work_and_resolve',
         args: [url],
-        value: 0n,
+        value: BigInt(0), // 3. Явный BigInt
       });
       
       await client.waitForTransactionReceipt({
         hash: txHash,
-        status: "finalized",
-        fullTransaction: false
+        status: TransactionStatus.FINALIZED, // 3. Статус через Enum
+        // ullTransaction: false
       });
       
       await fetchStatus();
