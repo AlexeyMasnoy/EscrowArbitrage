@@ -1,2 +1,2 @@
-:HL["/EscrowArbitrage/_next/static/chunks/0nwac9ulgqqf6.css","style"]
-0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"/_not-found","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"jciGntXMa84LkShv3Zm78"}
+:HL["/_next/static/chunks/0nwac9ulgqqf6.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":16,"slots":{"children":{"name":"/_not-found","param":null,"prefetchHints":0,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":0,"slots":null}}}}},"staleTime":300,"buildId":"Q4HdxiQ_l9TNGNc9eRcPw"}
