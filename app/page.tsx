@@ -8,52 +8,53 @@ export default function Home() {
   const runArbitration = async () => {
     const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
     if (!contractAddress) {
-      setStatus("Ошибка: CONTRACT_ADDRESS не найден в .env.local");
+      setStatus("Ошибка: Адрес контракта не задан");
       return;
     }
 
-    setStatus("Отправка запроса в GenLayer...");
+    setStatus("Отправка запроса...");
 
     try {
-      // Идем напрямую в API GenLayer Studio — это самый надежный путь
+      // Прямой вызов API
       const response = await fetch(`https://studio.genlayer.com/api/contract/${contractAddress}/call`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          // Эти заголовки помогут браузеру понять, что это легитимный запрос
+          'Accept': 'application/json'
+        },
         body: JSON.stringify({
           method: "submit_work_and_resolve",
           args: [url]
         })
       });
 
-      const data = await response.json();
-      
-      if (response.ok) {
-        setStatus(`Транзакция принята! Хэш: ${data.tx_hash || 'ожидание'}`);
+      // Если ответ пустой, пробуем прочитать статус
+      if (response.status === 200) {
+        setStatus("Транзакция отправлена в сеть GenLayer!");
       } else {
-        setStatus(`Ошибка API: ${data.message || "Проверь адрес контракта"}`);
+        const errorText = await response.text();
+        setStatus(`Ошибка API: ${errorText}`);
       }
-    } catch (e: any) {
+    } catch (e) {
+      setStatus("Ошибка сети: запрос заблокирован браузером (CORS).");
       console.error(e);
-      setStatus("Ошибка сети: проверь, запущена ли GenLayer Studio");
     }
   };
 
   return (
     <main className="p-10 max-w-xl mx-auto font-sans bg-gray-900 text-white min-h-screen">
-      <h1 className="text-2xl font-bold mb-5">ИИ-Арбитраж (DeFi Circuit Breaker)</h1>
+      <h1 className="text-2xl font-bold mb-5">EscrowArbitrage</h1>
       <input 
         className="border p-3 w-full mb-4 rounded text-black"
-        placeholder="Вставь ссылку (URL)..."
+        placeholder="URL работы..."
         value={url}
         onChange={(e) => setUrl(e.target.value)}
       />
-      <button 
-        onClick={runArbitration}
-        className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition"
-      >
-        Запустить проверку ИИ
+      <button onClick={runArbitration} className="bg-blue-600 text-white px-6 py-3 rounded">
+        Запустить арбитраж
       </button>
-      <div className="mt-6 p-4 bg-gray-800 rounded border border-gray-700">
+      <div className="mt-6 p-4 bg-gray-800 rounded">
         <strong>Статус:</strong> {status}
       </div>
     </main>
